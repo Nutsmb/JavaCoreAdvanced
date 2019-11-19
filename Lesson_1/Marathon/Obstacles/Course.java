@@ -1,6 +1,6 @@
-package Lesson_1.Marathon.Obstacles;
-import Lesson_1.Marathon.Competitors.Competitor;
-import Lesson_1.Marathon.Competitors.Team;
+package Marathon.Obstacles;
+import Marathon.Competitors.Competitor;
+import Marathon.Competitors.Team;
 
 public class Course {
     Obstacle[] course;

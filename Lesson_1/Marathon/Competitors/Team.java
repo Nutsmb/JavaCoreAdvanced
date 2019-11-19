@@ -1,4 +1,4 @@
-package Lesson_1.Marathon.Competitors;
+package Marathon.Competitors;
 
 public class Team{
     String name;

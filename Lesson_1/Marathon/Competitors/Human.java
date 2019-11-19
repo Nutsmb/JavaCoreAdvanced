@@ -1,6 +1,7 @@
-package Lesson_1.Marathon;
+package Marathon.Competitors;
 
 public class Human implements Competitor {
+    String type;
     String name;
 
     int maxRunDistance;
