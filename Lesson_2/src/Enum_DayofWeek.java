@@ -1,2 +1,3 @@
 public enum Enum_DayofWeek {
+    MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
 }
