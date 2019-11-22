@@ -29,6 +29,15 @@ public class Exceptions {
         }
     }
 
+    public static void printArr(String[][] arr) {
+        for (int i = 0; i < arr.length; i++) {
+            for (int j = 0; j < arr[0].length; j++) {
+                System.out.print(" "+ arr[i][j]);
+            }
+            System.out.println();
+        }
+    }
+
     public static class  MyArraySizeException extends Exception {
         public MyArraySizeException(int rows, int columns){
             int A = 4; // при превышении А строк выкинет исключение
