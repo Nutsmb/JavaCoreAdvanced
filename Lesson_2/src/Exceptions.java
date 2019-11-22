@@ -9,6 +9,14 @@ public class Exceptions {
                 Arr[i][j] = String.valueOf(Math.round(Math.random() * 10));
             }
         }
+
+        //Arr[2][0] = "t"; Пример для неверного формата ячейки
+        printArr(Arr);
+        try {
+            printArrSum(Arr);
+        } catch (MyArraySizeException e){
+            e.printStackTrace();
+        }
     }
 
     public static void printArrSum(String[][] arr) throws MyArraySizeException {
