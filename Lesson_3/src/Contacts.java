@@ -14,4 +14,8 @@ public class Contacts {
         }
         contacts.get(name).add(tel);
     }
+
+    public static void getContact(String name){
+        System.out.println(name + " tel: " + contacts.get(name));
+    }
 }
