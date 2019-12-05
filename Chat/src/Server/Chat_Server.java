@@ -1,40 +1,25 @@
 package Server;
-
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Scanner;
+import java.util.Vector;
 
 public class Chat_Server {
-    public static void main(String[] args) {
+    private Vector<ClientHandler> clients;
+
+    public Chat_Server() {
+        clients = new Vector<>();
         ServerSocket server = null;
         Socket socket = null;
 
         try {
             server = new ServerSocket(8123);
             System.out.println("Сервер запустился!");
-
-            socket = server.accept();
-            System.out.println("Клиент подключился!");
-
-            DataInputStream inputStream = new DataInputStream(socket.getInputStream());
-            DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream());
-
-
             while (true){
-                String str = inputStream.readUTF();
-
-                if(str.equals("/qiut")){
-                    break;
-                }
-
-                System.out.println("Client: " + str);
-                outputStream.writeUTF(str);
+                socket = server.accept();
+                System.out.println("Клиент подключился!");
+                clients.add(new ClientHandler(this, socket));
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -53,4 +38,12 @@ public class Chat_Server {
         } // Closing socket and server
     }
 
+    public void broadcastMsg(String msg) {
+        for (ClientHandler client: clients) {
+            client.sendMsg(msg);
+        }
+            
+    }
+
 }
+

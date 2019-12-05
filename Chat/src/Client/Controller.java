@@ -44,6 +44,9 @@ public class Controller implements Initializable {
                     try {
                         while (true){
                             String str = inputStream.readUTF();
+                            if(str.equals("/serverClosed")){
+                                break;
+                            }
                             textArea.appendText(str + "\n");
                         }
                     } catch (IOException e) {
