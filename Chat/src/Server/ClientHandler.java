@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class ClientHandler {
     private Socket socket;
@@ -11,6 +12,7 @@ public class ClientHandler {
     DataOutputStream outputStream;
     ChatServer server;
     String nick;
+    private ArrayList<String> authorizedUsers  = new ArrayList();
 
     public ClientHandler(ChatServer server, Socket socket){
 
@@ -30,10 +32,16 @@ public class ClientHandler {
                                 String[] token = str.split(" ");
                                 String newNick = AuthService.getNickByLoginAndPass(token[1], token[2]);
                                 if(newNick != null){
-                                    nick = newNick;
-                                    sendMsg("/authOK " + nick);
-                                    server.subscribe(ClientHandler.this);
-                                    break;
+                                    if(authorizedUsers.contains(newNick)){
+                                        sendMsg("Этот пользователь уже авторизовался");
+                                    }
+                                    else {
+                                        nick = newNick;
+                                        authorizedUsers.add(newNick);
+                                        sendMsg("/authOK " + nick);
+                                        server.subscribe(ClientHandler.this);
+                                        break;
+                                    }
                                 }
                                 else {sendMsg("Неверный логин/пароль");}
                             }

@@ -14,8 +14,6 @@ public class ChatServer {
 
         try {
             AuthService.connect();
-            String res = AuthService.getNickByLoginAndPass("login1", "pass1");
-            System.out.println(res);
             server = new ServerSocket(8123);
             System.out.println("Сервер запустился!");
             while (true){

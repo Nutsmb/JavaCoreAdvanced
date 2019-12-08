@@ -110,7 +110,7 @@ public class Controller{
                             e.printStackTrace();
                             System.out.println("Не удалось закрыть сокет на стороне клиенте!");
                         }
-                        setAuthorised(true);
+                        setAuthorised(false);
                     } // Closing socket
                 }
             }).start();
