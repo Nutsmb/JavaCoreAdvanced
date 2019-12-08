@@ -30,8 +30,8 @@ public class ClientHandler {
                                 String[] token = str.split(" ");
                                 String newNick = AuthService.getNickByLoginAndPass(token[1], token[2]);
                                 if(newNick != null){
-                                    sendMsg("/authOK");
                                     nick = newNick;
+                                    sendMsg("/authOK " + nick);
                                     server.subscribe(ClientHandler.this);
                                     break;
                                 }
@@ -45,7 +45,11 @@ public class ClientHandler {
                                 outputStream.writeUTF("/serverclosed");
                                 break;
                             }
-                            server.broadcastMsg(nick + " :" + str);
+                            if(str.startsWith("/pm")){
+                                server.broadcastMsg(str);
+                            } else {
+                                server.broadcastMsg(nick + " :" + str);
+                            }
                         }
                     } catch (IOException e){
                         e.printStackTrace();

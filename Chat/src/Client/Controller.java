@@ -1,5 +1,6 @@
 package Client;
 
+import Server.ClientHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
@@ -29,6 +30,8 @@ public class Controller{
     final int PORT = 8123;
 
     boolean isAuthorized = false;
+    String nick;
+    String privateMsg;
 
     @FXML
     HBox upperPanel;
@@ -70,7 +73,9 @@ public class Controller{
                     try {
                         while (true){
                             String str = inputStream.readUTF();
-                            if(str.equals("/authOK")){
+                            if(str.startsWith("/authOK")){
+                                String[] token = str.split(" ");
+                                nick = token[1];
                                 setAuthorised(true);
                                 break;
                             }
@@ -84,7 +89,17 @@ public class Controller{
                             if(str.equals("/serverClosed")){
                                 break;
                             }
-                            textArea.appendText(str + "\n");
+                            if(str.startsWith("/pm")){
+                                String[] token = str.split(" ");
+                                String addressee = token[1];
+                                str = str.replace("/pm ", "");
+                                str = str.replace(addressee, "");
+                                if(addressee.equals(nick)){
+                                    textArea.appendText(str + "\n");
+                                }
+                            } else {
+                                textArea.appendText(str + "\n");
+                            }
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
