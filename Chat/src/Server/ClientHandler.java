@@ -9,9 +9,10 @@ public class ClientHandler {
     private Socket socket;
     DataInputStream inputStream;
     DataOutputStream outputStream;
-    Chat_Server server;
+    ChatServer server;
+    String nick;
 
-    public ClientHandler(Chat_Server server, Socket socket){
+    public ClientHandler(ChatServer server, Socket socket){
 
         try {
             this.socket = socket;
@@ -25,11 +26,26 @@ public class ClientHandler {
                     try {
                         while (true){
                             String str = inputStream.readUTF();
-                            if(str.equals("/qiut")){
+                            if(str.startsWith("/auth")){
+                                String[] token = str.split(" ");
+                                String newNick = AuthService.getNickByLoginAndPass(token[1], token[2]);
+                                if(newNick != null){
+                                    sendMsg("/authOK");
+                                    nick = newNick;
+                                    server.subscribe(ClientHandler.this);
+                                    break;
+                                }
+                                else {sendMsg("Неверный логин/пароль");}
+                            }
+                        }
+
+                        while (true){
+                            String str = inputStream.readUTF();
+                            if(str.equals("/quit")){
                                 outputStream.writeUTF("/serverclosed");
                                 break;
                             }
-                            server.broadcastMsg(str);
+                            server.broadcastMsg(nick + " :" + str);
                         }
                     } catch (IOException e){
                         e.printStackTrace();
@@ -52,10 +68,10 @@ public class ClientHandler {
                             e.printStackTrace();
                             System.out.println("Сокет сервера не закрылся!");
                         }
+                        server.unsubscribe(ClientHandler.this);
                     } // Closing input&output streams and socket
                 }
             }).start();
-
         } catch (IOException e) {
             e.printStackTrace();
         }

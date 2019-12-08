@@ -1,20 +1,17 @@
 package Client;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.net.URL;
-import java.util.ResourceBundle;
 
-public class Controller implements Initializable {
+public class Controller{
     @FXML
     TextArea textArea;
 
@@ -31,8 +28,37 @@ public class Controller implements Initializable {
     final String IP_ADRESS = "localhost";
     final int PORT = 8123;
 
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
+    boolean isAuthorized = false;
+
+    @FXML
+    HBox upperPanel;
+
+    @FXML
+    HBox bottomPanel;
+
+    @FXML
+    TextField loginField;
+
+    @FXML
+    TextField passwordField;
+
+    public void setAuthorised(boolean isAuthorized){
+        this.isAuthorized = isAuthorized;
+        if (!isAuthorized){
+            upperPanel.setVisible(true);
+            upperPanel.setManaged(true);
+            bottomPanel.setVisible(false);
+            bottomPanel.setManaged(false);
+        }
+        else {
+            upperPanel.setVisible(false);
+            upperPanel.setManaged(false);
+            bottomPanel.setVisible(true);
+            bottomPanel.setManaged(true);
+        }
+    }
+
+    public void connect() {
         try {
             socket = new Socket(IP_ADRESS, PORT);
             inputStream = new DataInputStream(socket.getInputStream());
@@ -42,6 +68,17 @@ public class Controller implements Initializable {
                 @Override
                 public void run() {
                     try {
+                        while (true){
+                            String str = inputStream.readUTF();
+                            if(str.equals("/authOK")){
+                                setAuthorised(true);
+                                break;
+                            }
+                            else {
+                                textArea.appendText(str + "\n");
+                            }
+                        }
+
                         while (true){
                             String str = inputStream.readUTF();
                             if(str.equals("/serverClosed")){
@@ -58,6 +95,7 @@ public class Controller implements Initializable {
                             e.printStackTrace();
                             System.out.println("Не удалось закрыть сокет на стороне клиенте!");
                         }
+                        setAuthorised(true);
                     } // Closing socket
                 }
             }).start();
@@ -67,7 +105,7 @@ public class Controller implements Initializable {
         }
     }
 
-    public void sendMsg(ActionEvent actionEvent) {
+    public void sendMsg() {
         try {
             outputStream.writeUTF(textField.getText());
             textField.clear();
@@ -75,6 +113,18 @@ public class Controller implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    public void tryToAuth() {
+        if(socket == null || socket.isClosed()){
+            connect();
+        }
+        try {
+            outputStream.writeUTF("/auth " + loginField.getText() + " " + passwordField.getText());
+            loginField.clear();
+            passwordField.clear();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
