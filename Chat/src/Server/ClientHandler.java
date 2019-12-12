@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ClientHandler {
     private Socket socket;
@@ -14,6 +15,8 @@ public class ClientHandler {
     String nick;
     private ArrayList<String> authorizedUsers  = new ArrayList();
 
+    List<String> blackList;
+
     public ClientHandler(ChatServer server, Socket socket){
 
         try {
@@ -21,10 +24,9 @@ public class ClientHandler {
             this.server = server;
             this.inputStream = new DataInputStream(socket.getInputStream());
             this.outputStream = new DataOutputStream(socket.getOutputStream());
+            this.blackList = new ArrayList<>();
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
+            new Thread(() -> {
                     try {
                         while (true){
                             String str = inputStream.readUTF();
@@ -40,6 +42,7 @@ public class ClientHandler {
                                         authorizedUsers.add(newNick);
                                         sendMsg("/authOK " + nick);
                                         server.subscribe(ClientHandler.this);
+                                        blackList = AuthService.getBlacklist(nick);
                                         break;
                                     }
                                 }
@@ -54,9 +57,15 @@ public class ClientHandler {
                                 break;
                             }
                             if(str.startsWith("/pm")){
-                                server.broadcastMsg(str);
+                                server.broadcastMsg(this, nick + ": " + str);
                             } else {
-                                server.broadcastMsg(nick + " :" + str);
+                                server.broadcastMsg(this, nick + ": " + str);
+                            }
+                            if (str.startsWith("/blacklist ")) { // /blacklist nick3
+                                String[] tokens = str.split(" ");
+                                blackList.add(tokens[1]);
+                                AuthService.addToBlacklist(nick, tokens[1]);
+                                sendMsg("Вы добавили пользователя " + tokens[1] + " в черный список");
                             }
                         }
                     } catch (IOException e){
@@ -82,12 +91,11 @@ public class ClientHandler {
                         }
                         server.unsubscribe(ClientHandler.this);
                     } // Closing input&output streams and socket
-                }
-            }).start();
-        } catch (IOException e) {
-            e.printStackTrace();
+                }).start();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-    }
 
     public void sendMsg(String msg){
         try {
@@ -96,5 +104,13 @@ public class ClientHandler {
             e.printStackTrace();
             System.out.println("Сообщение отправить не удалось!");
         }
+    }
+
+    public String getNick() {
+        return nick;
+    }
+
+    public boolean checkBlackList(String nick) {
+        return blackList.contains(nick);
     }
 }

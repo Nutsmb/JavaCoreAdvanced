@@ -40,9 +40,11 @@ public class ChatServer {
         } // Closing socket and server
     }
 
-    public void broadcastMsg(String msg) {
+    public void broadcastMsg(ClientHandler from, String msg) {
         for (ClientHandler client: clients) {
-            client.sendMsg(msg);
+            if (!client.checkBlackList(from.getNick())) {
+                client.sendMsg(msg);
+            }
         }
     }
 
