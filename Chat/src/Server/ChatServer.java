@@ -48,6 +48,17 @@ public class ChatServer {
         }
     }
 
+    public void privateMsg(ClientHandler from, String _addressee, String _msg){
+        for (ClientHandler o : clients) {
+            if (o.getNick().equals(_addressee)) {
+                o.sendMsg("from " + from.getNick() + ": " + _msg);
+                from.sendMsg("to " + _addressee + ": " + _msg);
+                return;
+            }
+        }
+        from.sendMsg("Пользователя " + _addressee + " нет в чате");
+    }
+
     public void subscribe(ClientHandler client){
         clients.add(client);
     }

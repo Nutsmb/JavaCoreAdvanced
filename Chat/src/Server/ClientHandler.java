@@ -57,15 +57,19 @@ public class ClientHandler {
                                 break;
                             }
                             if(str.startsWith("/pm")){
-                                server.broadcastMsg(this, nick + ": " + str);
-                            } else {
-                                server.broadcastMsg(this, nick + ": " + str);
+                                String[] token = str.split(" ");
+                                String addressee = token[1];
+                                str = str.replace("/pm ", "");
+                                str = str.replace(addressee, "");
+                                server.privateMsg(this, addressee, str);
                             }
-                            if (str.startsWith("/blacklist ")) { // /blacklist nick3
+                            else if (str.startsWith("/blacklist ")) { // /blacklist nick3
                                 String[] tokens = str.split(" ");
                                 blackList.add(tokens[1]);
                                 AuthService.addToBlacklist(nick, tokens[1]);
                                 sendMsg("Вы добавили пользователя " + tokens[1] + " в черный список");
+                            } else {
+                                server.broadcastMsg(this, nick + ": " + str);
                             }
                         }
                     } catch (IOException e){

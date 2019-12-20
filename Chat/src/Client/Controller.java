@@ -88,15 +88,6 @@ public class Controller{
                             String str = inputStream.readUTF();
                             if(str.equals("/serverClosed")){
                                 break;
-                            }
-                            if(str.startsWith("/pm")){
-                                String[] token = str.split(" ");
-                                String addressee = token[1];
-                                str = str.replace("/pm ", "");
-                                str = str.replace(addressee, "");
-                                if(addressee.equals(nick)){
-                                    textArea.appendText(str + "\n");
-                                }
                             } else {
                                 textArea.appendText(str + "\n");
                             }
