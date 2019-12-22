@@ -27,7 +27,7 @@ public class Controller{
     DataOutputStream outputStream;
 
     final String IP_ADRESS = "localhost";
-    final int PORT = 8123;
+    final int PORT = 8124;
 
     boolean isAuthorized = false;
     String nick;
@@ -44,6 +44,15 @@ public class Controller{
 
     @FXML
     TextField passwordField;
+
+    @FXML
+    TextField nicknameField;
+
+    @FXML
+    Button authBtn;
+
+    @FXML
+    Button regBtn;
 
     public void setAuthorised(boolean isAuthorized){
         this.isAuthorized = isAuthorized;
@@ -129,6 +138,20 @@ public class Controller{
             outputStream.writeUTF("/auth " + loginField.getText() + " " + passwordField.getText());
             loginField.clear();
             passwordField.clear();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void tryToSignup(){
+        if(socket == null || socket.isClosed()){
+            connect();
+        }
+        try {
+            outputStream.writeUTF("/regis " + loginField.getText() + " " + passwordField.getText() + " " + nicknameField.getText());
+            loginField.clear();
+            passwordField.clear();
+            nicknameField.clear();
         } catch (IOException e) {
             e.printStackTrace();
         }

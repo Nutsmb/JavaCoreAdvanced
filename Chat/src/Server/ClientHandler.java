@@ -48,6 +48,20 @@ public class ClientHandler {
                                 }
                                 else {sendMsg("Неверный логин/пароль");}
                             }
+                            if(str.startsWith("/regis")){
+                                String[] token = str.split(" ");
+                                if(AuthService.getNickByLoginAndPass(token[1], token[2]) == null){
+                                    AuthService.signup(token[1], token[2], token[3]); // добавить в базу пользователя
+                                    // авторизовать пользователя
+                                    nick = token[3];
+                                    authorizedUsers.add(nick);
+                                    sendMsg("/authOK " + nick);
+                                    server.subscribe(ClientHandler.this);
+                                    blackList = AuthService.getBlacklist(nick);
+                                    break;
+                                }
+                                else {sendMsg("Такой логин уже существует");}
+                            }
                         }
 
                         while (true){

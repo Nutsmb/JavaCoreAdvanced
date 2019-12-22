@@ -14,7 +14,7 @@ public class ChatServer {
 
         try {
             AuthService.connect();
-            server = new ServerSocket(8123);
+            server = new ServerSocket(8124);
             System.out.println("Сервер запустился!");
             while (true){
                 socket = server.accept();

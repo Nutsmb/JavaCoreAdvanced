@@ -63,6 +63,17 @@ public class AuthService {
         }
     }
 
+    public static int signup(String _login, String _password, String _nickname){
+        String sql = String.format("INSERT INTO users (login, password, nickname) VALUES ('%s', '%s','%s')", _login,_password,_nickname);
+        int rs = 0;
+        try {
+            rs = stmt.executeUpdate(sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return rs;
+    }
+
     public static void disconnect(){
         try {
             connection.close();
