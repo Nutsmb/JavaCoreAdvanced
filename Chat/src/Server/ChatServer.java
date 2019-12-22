@@ -61,10 +61,24 @@ public class ChatServer {
 
     public void subscribe(ClientHandler client){
         clients.add(client);
+        broadcastClientList();
     }
 
     public void unsubscribe(ClientHandler client) {
         clients.remove(client);
+        broadcastClientList();
+    }
+
+    public void broadcastClientList(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("/clientlist ");
+        for(ClientHandler o : clients){
+            sb.append(o.getNick() + " ");
+        }
+        String out = sb.toString();
+        for(ClientHandler o : clients){
+            o.sendMsg(out);
+        }
     }
 
 }

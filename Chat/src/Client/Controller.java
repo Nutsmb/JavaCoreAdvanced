@@ -1,8 +1,10 @@
 package Client;
 
 import Server.ClientHandler;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
@@ -53,6 +55,9 @@ public class Controller{
 
     @FXML
     Button regBtn;
+    
+    @FXML
+    ListView clientsList;
 
     public void setAuthorised(boolean isAuthorized){
         this.isAuthorized = isAuthorized;
@@ -97,7 +102,17 @@ public class Controller{
                             String str = inputStream.readUTF();
                             if(str.equals("/serverClosed")){
                                 break;
-                            } else {
+                            }
+                            else if(str.startsWith("/clientlist")){
+                                String[] token = str.split(" ");
+                                Platform.runLater(()->{
+                                    clientsList.getItems().clear();
+                                    for(int i = 1; i <token.length; i++) {
+                                        clientsList.getItems().add(token[i]);
+                                    }
+                                });
+                            }
+                            else {
                                 textArea.appendText(str + "\n");
                             }
                         }
@@ -155,5 +170,9 @@ public class Controller{
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void selectClient(){
+
     }
 }

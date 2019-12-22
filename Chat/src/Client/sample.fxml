@@ -4,6 +4,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ListView?>
 <VBox fx:controller="Client.Controller"
       xmlns:fx="http://javafx.com/fxml" alignment="center" >
     <HBox fx:id="upperPanel">
@@ -14,9 +15,14 @@
         <Button fx:id="regBtn" text="Зарегистрироваться" onAction="#tryToSignup"/>
     </HBox>
 
-    <TextArea fx:id="textArea" editable="false" VBox.vgrow="ALWAYS"/>
-    <HBox fx:id="bottomPanel" managed="false" visible="false">
-        <TextField fx:id="textField" HBox.hgrow="ALWAYS" promptText="Введите сообщение.." onAction="#sendMsg"/>
-        <Button fx:id="sendBtn" text="Send" onAction="#sendMsg"/>
+    <HBox VBox.vgrow="ALWAYS">
+        <VBox HBox.hgrow="ALWAYS">
+            <TextArea fx:id="textArea" editable="false" VBox.vgrow="ALWAYS"/>
+            <HBox fx:id="bottomPanel" managed="false" visible="false">
+                <TextField fx:id="textField" HBox.hgrow="ALWAYS" promptText="Введите сообщение.." onAction="#sendMsg"/>
+                <Button fx:id="sendBtn" text="Send" onAction="#sendMsg"/>
+            </HBox>
+        </VBox>
+        <ListView fx:id="clientsList" onMouseClicked="#selectClient" prefWidth="200" />
     </HBox>
 </VBox>
