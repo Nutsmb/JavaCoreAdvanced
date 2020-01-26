@@ -3,11 +3,23 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Vector;
+import java.util.logging.*;
 
 public class ChatServer {
     private Vector<ClientHandler> clients;
+    private static final Logger logger = Logger.getLogger("");
 
     public ChatServer() {
+        Handler handler = null;
+        try {
+            handler = new FileHandler("Server.log",true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        handler.setLevel(Level.ALL);
+        handler.setFormatter(new SimpleFormatter());
+        logger.addHandler(handler);
+
         clients = new Vector<>();
         ServerSocket server = null;
         Socket socket = null;
@@ -16,6 +28,7 @@ public class ChatServer {
             AuthService.connect();
             server = new ServerSocket(8124);
             System.out.println("Сервер запустился!");
+            logger.log(Level.INFO, "Сервер запустился!");
             while (true){
                 socket = server.accept();
                 System.out.println("Клиент подключился!");
@@ -29,12 +42,14 @@ public class ChatServer {
             } catch (IOException e) {
                 e.printStackTrace();
                 System.out.println("Не удалось закрыть сокет на стороне сервера.");
+                logger.log(Level.SEVERE, "Не удалось закрыть сокет на стороне сервера.");
             }
             try {
                 server.close();
             } catch (IOException e) {
                 e.printStackTrace();
                 System.out.println("Не удалось закрыть сервер.");
+                logger.log(Level.SEVERE, "Не удалось закрыть сервер.");
             }
             AuthService.disconnect();
         } // Closing socket and server

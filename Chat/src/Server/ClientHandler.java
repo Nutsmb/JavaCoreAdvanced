@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.*;
 
 public class ClientHandler {
     private Socket socket;
@@ -15,9 +16,21 @@ public class ClientHandler {
     String nick;
     private ArrayList<String> authorizedUsers  = new ArrayList();
 
+    private static final Logger logger = Logger.getLogger("");
+
     List<String> blackList;
 
     public ClientHandler(ChatServer server, Socket socket){
+
+        Handler handler = null;
+        try {
+            handler = new FileHandler("Commands.log",true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        handler.setLevel(Level.ALL);
+        handler.setFormatter(new SimpleFormatter());
+        logger.addHandler(handler);
 
         try {
             this.socket = socket;
@@ -36,6 +49,7 @@ public class ClientHandler {
                                 if(newNick != null){
                                     if(authorizedUsers.contains(newNick)){
                                         sendMsg("Этот пользователь уже авторизовался");
+                                        logger.log(Level.WARNING, "Попытка повторной авторизации. "+ newNick);
                                     }
                                     else {
                                         nick = newNick;
@@ -43,10 +57,14 @@ public class ClientHandler {
                                         sendMsg("/authOK " + nick);
                                         server.subscribe(ClientHandler.this);
                                         blackList = AuthService.getBlacklist(nick);
+                                        logger.log(Level.INFO, "Подключился пользователь " + nick +"!");
                                         break;
                                     }
                                 }
-                                else {sendMsg("Неверный логин/пароль");}
+                                else {
+                                    sendMsg("Неверный логин/пароль");
+                                    logger.log(Level.WARNING, "Ошибка авторизации по логину/паролю" + token[1] + " " + token[2]);
+                                }
                             }
                             if(str.startsWith("/regis")){
                                 String[] token = str.split(" ");
@@ -58,9 +76,13 @@ public class ClientHandler {
                                     sendMsg("/authOK " + nick);
                                     server.subscribe(ClientHandler.this);
                                     blackList = AuthService.getBlacklist(nick);
+                                    logger.log(Level.INFO, "Подключился новый пользователь " + nick +"!");
                                     break;
                                 }
-                                else {sendMsg("Такой логин уже существует");}
+                                else {
+                                    sendMsg("Такой логин уже существует");
+                                    logger.log(Level.WARNING, "Попытка повторной регистрации с логин "+ token[1]);
+                                }
                             }
                         }
 
@@ -94,18 +116,22 @@ public class ClientHandler {
                         } catch (IOException e) {
                             e.printStackTrace();
                             System.out.println("Входящий поток не закрылся!");
+                            logger.log(Level.SEVERE, "Входящий поток не закрылся!");
                         }
                         try {
                             outputStream.close();
                         } catch (IOException e) {
                             e.printStackTrace();
                             System.out.println("Исходящий поток не закрылся!");
+                            logger.log(Level.SEVERE, "Исходящий поток не закрылся!");
                         }
                         try {
                             socket.close();
                         } catch (IOException e) {
                             e.printStackTrace();
                             System.out.println("Сокет сервера не закрылся!");
+                            logger.log(Level.SEVERE, "Сокет сервера не закрылся!");
+
                         }
                         server.unsubscribe(ClientHandler.this);
                     } // Closing input&output streams and socket
@@ -121,6 +147,7 @@ public class ClientHandler {
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Сообщение отправить не удалось!");
+            logger.log(Level.INFO, "Сообщение отправить не удалось!");
         }
     }
 
