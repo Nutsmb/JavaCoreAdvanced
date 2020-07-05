@@ -1,34 +1,39 @@
 public class Threads {
 
     static final int NUMBER_OF_THREADS = 2;
-    static final int size = 10;//
-    static int h = size/NUMBER_OF_THREADS;
-    static float[] arr = new float[size];
-    static float[] arrEnd = new float[size];
+    static final int size = 10000000; // размер первоначального массива
+    static int h = size/NUMBER_OF_THREADS; // количество элементов в массиве потока
+    static float[] arr = new float[size]; // первоначальный массив
+    static float[] arrThreads = new float[size]; // массив, склееный из массивов потоков
+    static float[] arrLonely = new float[size]; // массив после обработки в одном потоке
 
     public static void main(String[] args) {
-        //float[] arr = new float[size];
+        //заполняем массив единицами
         for (int i = 0; i < size; i++) {
             arr[i] = 1;
         }
-        for (int i = 0; i < size; i++) {
-            arrEnd[i] = 1;
-        }
-        for (int i = 0; i < size; i++) {
-            System.out.print(arrEnd[i]+" ");
-        }
-        System.out.println();
+
         MultiThread();
+
+        System.out.println();
+
+        lonelly();
+    }
+
+    public static void lonelly(){
+        long ini = System.currentTimeMillis();
         for (int i = 0; i < size; i++) {
-            System.out.print(arrEnd[i]+" ");
+            arrLonely[i] = (float)(arr[i] * Math.sin(0.2f + i / 5) * Math.cos(0.2f + i / 5) * Math.cos(0.4f + i / 2));
         }
+        System.out.println("Time for lonelly thread " + (System.currentTimeMillis() - ini));
     }
 
     public static void MultiThread() {
         long initTime = System.currentTimeMillis();
-        new Thread(new MyRunnableClass(0)).start();
-        new Thread(new MyRunnableClass(1)).start();
-        System.out.println(System.currentTimeMillis() - initTime);
+        for (int i = 0; i < NUMBER_OF_THREADS; i++) {
+            new Thread(new MyRunnableClass(i)).start();
+        }
+        System.out.println("Time for multithread " + (System.currentTimeMillis() - initTime));
     }
 
     static class MyRunnableClass implements Runnable {
@@ -44,12 +49,12 @@ public class Threads {
         public void run() {
             for (int i = 0; i < h; i++) {
                 try {
-                    _arr[i] = (float)(_arr[i] * Math.sin(0.2f + i / 5) * Math.cos(0.2f + i / 5) * Math.cos(0.4f + i / 2));
+                    _arr[i] = (float)(_arr[i] * Math.sin(0.2f + (i+iteration * h) / 5) * Math.cos(0.2f + (i+iteration * h) / 5) * Math.cos(0.4f + (i+iteration * h) / 2));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-            System.arraycopy(_arr, 0, arrEnd, iteration*h, h);
+            System.arraycopy(_arr, 0, arrThreads, iteration*h, h);
         }
     }
 }
