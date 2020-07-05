@@ -3,6 +3,7 @@ import java.util.Map;
 
 public class ArrOfWords {
     public static void main(String[] args) {
+        
         String[] words = {"арбуз", "дыня", "огурец", "лук",
                             "кокос", "томат", "яблоко", "слива",
                             "авокадо", "апельсин", "дыня", "томат",

@@ -6,6 +6,7 @@ public class Contacts {
     private static Map<String, ArrayList<String>> contacts = new HashMap<>();
 
     public static void main(String[] args) {
+
         addContact("Rufus", "89999999999");
         addContact("Arus", "89992134999");
         addContact("Gerios", "89569999922");
